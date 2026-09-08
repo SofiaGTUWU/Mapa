@@ -13,6 +13,7 @@
     <a-assets>
       <a-asset-item id="miModelo" src="3D/result (1).glb"></a-asset-item>
        <a-asset-item id="miModelo2" src="3D/CASINO.glb"></a-asset-item>
+       <a-asset-item id="miModelo3" src="3D/casa.glb"></a-asset-item>
     </a-assets>
 
 
@@ -21,7 +22,7 @@
       material="color: #73913B; displacementMap: #heightMap; displacementScale: 2.5; roughness: 1; metalness: 0"
       rotation="-90 0 0"
       position="0 0 -6"
-       scale="20 24 20">
+       scale="2.5 2.5 2.5">
     </a-entity>
 
 
@@ -40,6 +41,15 @@
         scale="20 20 20"
         rotation="0 0 0">
       </a-entity>
+
+       <a-entity
+        id="elModelo3"
+        gltf-model="#miModelo2"
+        position="-1 10 -27"
+        scale="20 20 20"
+        rotation="0 0 0">
+      </a-entity>
+
 
     <a-entity light="type: directional; intensity: 0.9; castShadow: true" position="2 4 2"></a-entity>
     <a-entity light="type: ambient; intensity: 0.6"></a-entity>
