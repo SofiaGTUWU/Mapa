@@ -2,73 +2,62 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Mapa 3D </title>
+  <title>MAPA 3D</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  
 </head>
 
-
 <body>
-  <a-scene background="color: #87CEEB">
+  <a-scene background="color: #90D5FF">
 
     <a-assets>
-      <a-asset-item id="miModelo" src="3D/result (1).glb"></a-asset-item>
-       <a-asset-item id="miModelo2" src="3D/CASINO.glb"></a-asset-item>
-       <a-asset-item id="miModelo3" src="3D/casa.glb"></a-asset-item>
+      <a-asset-item id="miModelo1" src="3D/bosque.glb"></a-asset-item>
+      <a-asset-item id="miModelo2" src="3D/CASINO.glb"></a-asset-item>
+      <a-asset-item id="miModelo3" src="3D/casa.glb"></a-asset-item>
+      <a-asset-item id="miModelo4" src="3D/casadentro.glb"></a-asset-item>
+      <a-asset-item id="miModelo5" src="3D/casinaDD.glb"></a-asset-item>
+
+          <a-asset-item id="Personaje1" src="3D/Ove.glb"></a-asset-item>
+          <a-asset-item id="Personaje2" src="3D/Ove.glb"></a-asset-item>
+          <a-asset-item id="Personaje3" src="3D/Ove.glb"></a-asset-item>
+
+          <a-asset-item id="Personaje" src="3D/lobo.glb"></a-asset-item>
     </a-assets>
 
-
-    <a-entity
-      geometry="primitive: plane; width: 10; height: 10; segmentsWidth: 256; segmentsHeight: 256"
-      material="color: #73913B; displacementMap: #heightMap; displacementScale: 2.5; roughness: 1; metalness: 0"
-      rotation="-90 0 0"
-      position="0 0 -6"
-       scale="3 3 3">
-    </a-entity>
+    <a-entity id="mundo">
 
 
-    <a-entity
-      id="elModelo"
-      gltf-model="#miModelo"
-      position="0 1 -6"
-      scale="24 24 24"
-      rotation="0 0 0">
-    </a-entity>
- 
-     <a-entity
-        id="elModelo2"
-        gltf-model="#miModelo2"
-        position="-1 9.5 -25"
-        scale="20 20 20"
-        rotation="0 0 0">
+      <!-- ===== Exterior: bosque, casino, casa (de fondo / puntos de la historia) ===== -->
+      <a-entity id="zonaExterior">
+        <a-entity
+          geometry="primitive: plane; width: 10; height: 10; segmentsWidth: 256; segmentsHeight: 256"
+          material="color: #82C8E5; roughness: 1; metalness: 0"
+          rotation="-90 0 0" position="0 0 -6" scale="3 3 3">
+        </a-entity>
+
+       <a-box color="tomato" side:double position="-3 2.5 -27" height="10" width="10" scale="1 1 10"
+       img id="texture" src="img/images (1).jpeg; side: back;"  
+      material=" src: #texture; side: back;repeat: 1 1; roughness: 1"
+       
+       ></a-box>
+       
+
+        <a-entity id="elModelo1" gltf-model="#miModelo1" position="0 1 -6" scale="24 24 24"></a-entity>
+        <a-entity id="elModelo2" gltf-model="#miModelo2" position="-1 9.5 -25" scale="20 20 20"></a-entity>
+        <a-entity id="elModelo3" gltf-model="#miModelo3" position="2 0 6" scale="5 5 5" rotation="0 200 0"></a-entity>
+        <a-entity id="elModelo4" gltf-model="#miModelo4" position="3 1.5 6" scale="7.5 7.5 7.5" rotation="0 130 0"></a-entity>
+        <a-entity id="elModelo5" gltf-model="#miModelo5" position="-3 2.5 -26" scale="7 7 7" rotation="0 1 0"></a-entity>
+
+
+
+         <a-entity id="Personaje1" gltf-model="#Personaje1" position="2 0.5 6" scale="1 1 1" rotation="0 0 0"></a-entity>
+         <a-entity id="Personaje2" gltf-model="#Personaje2" position="2 1 8" scale="1 1 1" rotation="0 0 0"></a-entity>
+         <a-entity id="Personaje3" gltf-model="#Personaje3" position="4 1 8" scale="1 1 1" rotation="0 20 0"></a-entity>   
+
+        
       </a-entity>
 
-       <a-entity
-        id="elModelo3"
-        gltf-model="#miModelo3"
-        position="10 0 4"
-        scale="5 5 5"
-        rotation="0 250 0">
-      </a-entity>
 
 
-    <a-entity light="type: directional; intensity: 0.9; castShadow: true" position="2 4 2"></a-entity>
-    <a-entity light="type: ambient; intensity: 0.6"></a-entity>
-
-    <!-- Cámara con movimiento (WASD + mouse), limitada a los bordes del modelo -->
-    <a-entity
-      camera
-      look-controls
-      wasd-controls
-      limite-mundo="target: #elModelo; margin: 0.3"
-      position="0 3 0">
-    </a-entity>
-
-  </a-scene>
-
-
-
-
-
-  
 </body>
 </html>
