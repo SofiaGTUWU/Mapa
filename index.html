@@ -4,7 +4,102 @@
   <meta charset="utf-8">
   <title>MAPA 3D</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  
+  <script>
+    AFRAME.registerComponent('limite-mundo', {
+      schema: {
+        target: {type: 'selector'},
+        margin: {type: 'number', default: 0.3}
+      },
+      init: function () {
+        this.box = new THREE.Box3();
+        this.ready = false;
+        const calcularLimites = () => {
+          this.box.setFromObject(this.data.target.object3D);
+          this.ready = true;
+        };
+        if (this.data.target.hasLoaded) calcularLimites();
+        else this.data.target.addEventListener('loaded', calcularLimites);
+        this.data.target.addEventListener('model-loaded', calcularLimites);
+      },
+      tick: function () {
+        if (!this.ready) return;
+        const pos = this.el.object3D.position;
+        const m = this.data.margin;
+        pos.x = THREE.MathUtils.clamp(pos.x, this.box.min.x + m, this.box.max.x - m);
+        pos.z = THREE.MathUtils.clamp(pos.z, this.box.min.z + m, this.box.max.z - m);
+      }
+    });
+
+    function ocultarMenu(el) {
+      if (!el) return;
+      el.setAttribute('visible', false);
+      el.querySelectorAll('.tarjeta-boton').forEach((p) => p.classList.remove('clickable'));
+      refrescarRaycaster();
+    }
+    function mostrarMenu(el) {
+      if (!el) return;
+      el.setAttribute('visible', true);
+      el.querySelectorAll('.tarjeta-boton').forEach((p) => p.classList.add('clickable'));
+      refrescarRaycaster();
+    }
+    function refrescarRaycaster() {
+      const cam = document.querySelector('[raycaster]');
+      if (cam && cam.components.raycaster) cam.components.raycaster.refreshObjects();
+    }
+
+    // "mostrar" ahora acepta UNO o VARIOS destinos (separados por coma),
+    // por ejemplo: mostrar: "#menuReinicio, #menuAyudaLudopatia"
+    AFRAME.registerComponent('tarjeta', {
+      schema: {
+        destino: {type: 'vec3'},
+        imagen: {type: 'string', default: ''},
+        ocultar: {type: 'selectorAll'},
+        mostrar: {type: 'selectorAll'}
+      },
+      init: function () {
+        this.el.addEventListener('click', () => {
+          const camara = document.querySelector('[camera]');
+          camara.setAttribute('position', this.data.destino);
+
+          if (this.data.ocultar) this.data.ocultar.forEach((el) => ocultarMenu(el));
+          if (this.data.mostrar) this.data.mostrar.forEach((el) => mostrarMenu(el));
+
+          if (this.data.imagen) {
+            const img = document.querySelector('#imagenResultado');
+            img.setAttribute('src', this.data.imagen);
+            img.setAttribute('visible', true);
+            clearTimeout(window._temporizadorImagen);
+            window._temporizadorImagen = setTimeout(() => {
+              img.setAttribute('visible', false);
+            }, 3000);
+          }
+        });
+      }
+    });
+
+    AFRAME.registerComponent('punto-decision', {
+      schema: {
+        centro: {type: 'vec3'},
+        radio: {type: 'number', default: 3},
+        menu: {type: 'selector'}
+      },
+      init: function () {
+        this.centroVec = new THREE.Vector3(this.data.centro.x, this.data.centro.y, this.data.centro.z);
+        this.posCamara = new THREE.Vector3();
+        this.activado = false;
+      },
+      tick: function () {
+        if (this.activado) return;
+        const camara = document.querySelector('[camera]');
+        if (!camara || !this.data.menu) return;
+        camara.object3D.getWorldPosition(this.posCamara);
+        if (this.posCamara.distanceTo(this.centroVec) < this.data.radio) {
+          mostrarMenu(this.data.menu);
+          this.activado = true;
+        }
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -17,17 +112,19 @@
       <a-asset-item id="miModelo4" src="3D/casadentro.glb"></a-asset-item>
       <a-asset-item id="miModelo5" src="3D/casinaDD.glb"></a-asset-item>
 
-          <a-asset-item id="Personaje1" src="3D/Ove.glb"></a-asset-item>
-          <a-asset-item id="Personaje2" src="3D/Ove.glb"></a-asset-item>
-          <a-asset-item id="Personaje3" src="3D/Ove.glb"></a-asset-item>
+      <a-asset-item id="Personaje1" src="3D/Ove.glb"></a-asset-item>
+      <a-asset-item id="Personaje2" src="3D/Ove.glb"></a-asset-item>
+      <a-asset-item id="Personaje3" src="3D/Ove.glb"></a-asset-item>
+      <a-asset-item id="Personaje4" src="3D/Ove.glb"></a-asset-item>
+      <a-asset-item id="Personaje5" src="3D/Ove.glb"></a-asset-item>
+      <a-asset-item id="Personaje6" src="3D/Ove.glb"></a-asset-item>
 
-          <a-asset-item id="Personaje" src="3D/lobo.glb"></a-asset-item>
+      <a-asset-item id="L" src="3D/lobo.glb"></a-asset-item>
+
+      <img id="texturaCasino" src="img/imagen1.jpg">
     </a-assets>
 
     <a-entity id="mundo">
-
-
-      <!-- ===== Exterior: bosque, casino, casa (de fondo / puntos de la historia) ===== -->
       <a-entity id="zonaExterior">
         <a-entity
           geometry="primitive: plane; width: 10; height: 10; segmentsWidth: 256; segmentsHeight: 256"
@@ -35,12 +132,8 @@
           rotation="-90 0 0" position="0 0 -6" scale="3 3 3">
         </a-entity>
 
-       <a-box color="tomato" side:double position="-3 2.5 -27" height="10" width="10" scale="1 1 10"
-       img id="texture" src="img/images (1).jpeg; side: back;"  
-      material=" src: #texture; side: back;repeat: 1 1; roughness: 1"
-       
-       ></a-box>
-       
+        <a-box color="tomato" position="-3 2.5 -27" height="10" width="10" scale="1 1 10"
+          material="src: #texturaCasino; side: double; roughness: 1"></a-box>
 
         <a-entity id="elModelo1" gltf-model="#miModelo1" position="0 1 -6" scale="24 24 24"></a-entity>
         <a-entity id="elModelo2" gltf-model="#miModelo2" position="-1 9.5 -25" scale="20 20 20"></a-entity>
@@ -48,16 +141,134 @@
         <a-entity id="elModelo4" gltf-model="#miModelo4" position="3 1.5 6" scale="7.5 7.5 7.5" rotation="0 130 0"></a-entity>
         <a-entity id="elModelo5" gltf-model="#miModelo5" position="-3 2.5 -26" scale="7 7 7" rotation="0 1 0"></a-entity>
 
+        <a-entity id="Personaje1" gltf-model="#Personaje1" position="2 0.5 6" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity id="Personaje2" gltf-model="#Personaje2" position="2 1 8" scale="1 1 1" rotation="0 0 0"></a-entity>
+        <a-entity id="Personaje3" gltf-model="#Personaje3" position="4 1.5 8" scale="1 1 1" rotation="0 20 0"></a-entity>
+        <a-entity id="Personaje4" gltf-model="#Personaje4" position="5 1.5 7" scale="1 1 1" rotation="0 30 0"></a-entity>
+        <a-entity id="Personaje5" gltf-model="#Personaje5" position="4 1 -3" scale="1 1 1" rotation="0 80 0"></a-entity>
+        <a-entity id="Personaje6" gltf-model="#Personaje6" position="1 1 -3" scale="1 1 1" rotation="0 200 0"></a-entity>
 
+        <a-entity id="L" gltf-model="#L" position="-0.5 2 -29.5" scale="3 3 3" rotation="0 270 0"></a-entity>
+      </a-entity>
+    </a-entity>
 
-         <a-entity id="Personaje1" gltf-model="#Personaje1" position="2 0.5 6" scale="1 1 1" rotation="0 0 0"></a-entity>
-         <a-entity id="Personaje2" gltf-model="#Personaje2" position="2 1 8" scale="1 1 1" rotation="0 0 0"></a-entity>
-         <a-entity id="Personaje3" gltf-model="#Personaje3" position="4 1 8" scale="1 1 1" rotation="0 20 0"></a-entity>   
+    <a-entity punto-decision="centro: 2 1.6 6; radio: 4; menu: #menuPuerta"></a-entity>
+    <a-entity punto-decision="centro: 0 3 0; radio: 3; menu: #menuBosque"></a-entity>
+    <a-entity punto-decision="centro: -2 2 -26; radio: 4; menu: #menuJugar"></a-entity>
 
-        
+    <a-entity position="0 1.6 0">
+      <a-torus color="#4CAF50" radius="1" radius-tubular="0.08"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"></a-torus>
+      <a-text value="Bosque" align="center" position="0 1.3 0" color="#FFF"></a-text>
+    </a-entity>
+    <a-entity position="-2 2 -26">
+      <a-torus color="#FFD700" radius="1" radius-tubular="0.08"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"></a-torus>
+      <a-text value="Casino" align="center" position="0 1.3 0" color="#FFF"></a-text>
+    </a-entity>
+
+    <a-entity light="type: directional; intensity: 0.9; castShadow: true" position="2 4 2"></a-entity>
+    <a-entity light="type: ambient; intensity: 0.6"></a-entity>
+
+    <a-entity
+      camera
+      look-controls
+      wasd-controls
+      limite-mundo="target: #mundo; margin: 0.3"
+      raycaster="objects: .clickable"
+      cursor="rayOrigin: mouse; fuse: false"
+      position="2 1.6 6">
+
+      <a-image id="imagenResultado" src="" position="0 0 -1.2" width="1.6" height="0.9" visible="false"></a-image>
+
+      <!-- 1) CASA: el lobo está golpeando -->
+      <a-entity id="menuPuerta" visible="false">
+        <a-text value="El lobo esta golpeando, ¿que haces?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
+        <a-entity position="-0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#C62828"
+            tarjeta="destino: 2 1.6 6; ocultar: #menuPuerta; mostrar: #menuReinicio; imagen: https://placehold.co/800x450/png?text=Te+salvas+con+tus+hermanos"></a-plane>
+          <a-text value="No abrir la puerta" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
+        <a-entity position="0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#5D4037"
+            tarjeta="destino: 2 1.6 6; ocultar: #menuPuerta; mostrar: #menuQuedarseCasa"></a-plane>
+          <a-text value="Abrir la puerta" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
       </a-entity>
 
+      <!-- 2) CASA2 -->
+      <a-entity id="menuQuedarseCasa" visible="false">
+        <a-text value="¿Quieres ir al casino?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
+        <a-entity position="-0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#2E7D32"
+            tarjeta="destino: 2 1.6 6; ocultar: #menuQuedarseCasa; mostrar: #menuReinicio; imagen: https://placehold.co/800x450/png?text=Te+reencuentras+con+tu+madre"></a-plane>
+          <a-text value="Quedarse" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
+        <a-entity position="0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#F9A825"
+            tarjeta="destino: 0 3 0; ocultar: #menuQuedarseCasa; imagen: https://placehold.co/800x450/png?text=Te+diriges+al+bosque"></a-plane>
+          <a-text value="No quedarse" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
+      </a-entity>
 
+      <!-- 3) BOSQUE -->
+      <a-entity id="menuBosque" visible="false">
+        <a-text value="El casino se ve muy terrorifico, ¿quieres seguir?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
+        <a-entity position="-0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#2E7D32"
+            tarjeta="destino: 0 3 0; ocultar: #menuBosque; mostrar: #menuReinicio; imagen: https://placehold.co/800x450/png?text=Encuentras+a+tu+madre+en+el+bosque"></a-plane>
+          <a-text value="Quedarse en el Bosque" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
+        <a-entity position="0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#FFD700"
+            tarjeta="destino: -2 2 -26; ocultar: #menuBosque; imagen: https://placehold.co/800x450/png?text=Llegas+al+casino"></a-plane>
+          <a-text value="Seguir al Casino" align="center" width="2.3" position="0 0 0.01" color="#333"></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- 4) CASINO (finales) -->
+      <a-entity id="menuJugar" visible="false">
+        <a-text value="¿Quieres jugar en el casino?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
+        <a-entity position="-0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#212121"
+            tarjeta="destino: -2 2 -26; ocultar: #menuJugar; mostrar: #menuReinicio, #menuAyudaLudopatia; imagen: https://placehold.co/800x450/png?text=Has+caido+en+la+ludopatia+perdiste+todo"></a-plane>
+          <a-text value="Jugar" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
+        <a-entity position="0.9 -0.3 -2">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#2E7D32"
+            tarjeta="destino: 2 1.6 6; ocultar: #menuJugar; imagen: https://placehold.co/800x450/png?text=Presentiste+que+jugar+no+era+buena+idea"></a-plane>
+          <a-text value="No Jugar" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- Menú de reinicio: aparece tras No abrir, Quedarse (Casa), Quedarse en el Bosque, o Jugar -->
+      <a-entity id="menuReinicio" visible="false">
+        <a-entity position="0 -0.7 -1">
+          <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#455A64"
+            tarjeta="destino: 2 1.6 6; ocultar: #menuReinicio, #menuAyudaLudopatia; mostrar: #menuPuerta"></a-plane>
+          <a-text value="Volver al inicio" align="center" width="2" position="0 0 0.01" color="#FFF"></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- Mensaje de ayuda: aparece solo en el final malo (Jugar). No se auto-oculta. -->
+      <a-entity id="menuAyudaLudopatia" visible="false">
+        <a-plane color="#1B1B1B" width="3" height="2" position="0 0.6 -1.5"></a-plane>
+        <a-text
+          value="El juego no deberia controlar tu vida. Si sientes que perdiste el control, pedir ayuda tambien es ganar.
+En Colombia, busca apoyo y no enfrentes la ludopatia a solas.
+
+Linea Nacional de Salud Mental: 106
+Emergencias: 123
+
+Tambien puedes acudir a tu EPS o centro de salud para recibir orientacion profesional.
+
+Tu vida vale mas que cualquier apuesta. Detente, habla y pide ayuda."
+          align="center" width="3" wrap-count="2" position="0 0.6 -1.5" color="#FFF"></a-text>
+      </a-entity>
+
+    </a-entity>
+
+  </a-scene>
 
 </body>
 </html>
