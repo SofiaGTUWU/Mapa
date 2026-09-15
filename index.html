@@ -46,6 +46,11 @@
       const cam = document.querySelector('[raycaster]');
       if (cam && cam.components.raycaster) cam.components.raycaster.refreshObjects();
     }
+    function reproducirSonido(audioEl) {
+      if (!audioEl) return;
+      audioEl.currentTime = 0;
+      audioEl.play().catch(() => {}); // ignora el bloqueo de autoplay del navegador si el usuario aún no interactuó
+    }
 
     // "mostrar" ahora acepta UNO o VARIOS destinos (separados por coma),
     // por ejemplo: mostrar: "#menuReinicio, #menuAyudaLudopatia"
@@ -54,7 +59,8 @@
         destino: {type: 'vec3'},
         imagen: {type: 'string', default: ''},
         ocultar: {type: 'selectorAll'},
-        mostrar: {type: 'selectorAll'}
+        mostrar: {type: 'selectorAll'},
+        sonido: {type: 'selector'}
       },
       init: function () {
         this.el.addEventListener('click', () => {
@@ -63,6 +69,7 @@
 
           if (this.data.ocultar) this.data.ocultar.forEach((el) => ocultarMenu(el));
           if (this.data.mostrar) this.data.mostrar.forEach((el) => mostrarMenu(el));
+          reproducirSonido(this.data.sonido);
 
           if (this.data.imagen) {
             const img = document.querySelector('#imagenResultado');
@@ -122,6 +129,9 @@
       <a-asset-item id="L" src="3D/lobo.glb"></a-asset-item>
 
       <img id="texturaCasino" src="img/imagen1.jpg">
+
+      <audio id="sonidoBueno" src="musica/bueno.mp3" preload="auto"></audio>
+      <audio id="sonidoMalo" src="musica/malo.mp3" preload="auto"></audio>
     </a-assets>
 
     <a-entity id="mundo">
@@ -186,7 +196,7 @@
         <a-text value="El lobo esta golpeando, ¿que haces?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
         <a-entity position="-0.9 -0.3 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#C62828"
-            tarjeta="destino: 2 1.6 6; ocultar: #menuPuerta; mostrar: #menuReinicio; imagen: https://placehold.co/800x450/png?text=Te+salvas+con+tus+hermanos"></a-plane>
+            tarjeta="destino: 2 1.6 6; ocultar: #menuPuerta; mostrar: #menuReinicio; sonido: #sonidoBueno; imagen: https://placehold.co/800x450/png?text=Te+salvas+con+tus+hermanos"></a-plane>
           <a-text value="No abrir la puerta" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
         </a-entity>
         <a-entity position="0.9 -0.3 -2">
@@ -201,7 +211,7 @@
         <a-text value="¿Quieres ir al casino?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
         <a-entity position="-0.9 -0.3 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#2E7D32"
-            tarjeta="destino: 2 1.6 6; ocultar: #menuQuedarseCasa; mostrar: #menuReinicio; imagen: https://placehold.co/800x450/png?text=Te+reencuentras+con+tu+madre"></a-plane>
+            tarjeta="destino: 2 1.6 6; ocultar: #menuQuedarseCasa; mostrar: #menuReinicio; sonido: #sonidoBueno; imagen: https://placehold.co/800x450/png?text=Te+reencuentras+con+tu+madre"></a-plane>
           <a-text value="Quedarse" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
         </a-entity>
         <a-entity position="0.9 -0.3 -2">
@@ -216,7 +226,7 @@
         <a-text value="El casino se ve muy terrorifico, ¿quieres seguir?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
         <a-entity position="-0.9 -0.3 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#2E7D32"
-            tarjeta="destino: 0 3 0; ocultar: #menuBosque; mostrar: #menuReinicio; imagen: https://placehold.co/800x450/png?text=Encuentras+a+tu+madre+en+el+bosque"></a-plane>
+            tarjeta="destino: 0 3 0; ocultar: #menuBosque; mostrar: #menuReinicio; sonido: #sonidoBueno; imagen: https://placehold.co/800x450/png?text=Encuentras+a+tu+madre+en+el+bosque"></a-plane>
           <a-text value="Quedarse en el Bosque" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
         </a-entity>
         <a-entity position="0.9 -0.3 -2">
@@ -231,19 +241,19 @@
         <a-text value="¿Quieres jugar en el casino?" align="center" width="3.2" position="0 0.5 -2" color="#FFF"></a-text>
         <a-entity position="-0.9 -0.3 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#212121"
-            tarjeta="destino: -2 2 -26; ocultar: #menuJugar; mostrar: #menuReinicio, #menuAyudaLudopatia; imagen: https://placehold.co/800x450/png?text=Has+caido+en+la+ludopatia+perdiste+todo"></a-plane>
+            tarjeta="destino: -2 2 -26; ocultar: #menuJugar; mostrar: #menuReinicio, #menuAyudaLudopatia; sonido: #sonidoMalo; imagen: https://placehold.co/800x450/png?text=Has+caido+en+la+ludopatia+perdiste+todo"></a-plane>
           <a-text value="Jugar" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
         </a-entity>
         <a-entity position="0.9 -0.3 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#2E7D32"
-            tarjeta="destino: 2 1.6 6; ocultar: #menuJugar; imagen: https://placehold.co/800x450/png?text=Presentiste+que+jugar+no+era+buena+idea"></a-plane>
+            tarjeta="destino: 2 1.6 6; ocultar: #menuJugar; sonido: #sonidoBueno; imagen: https://placehold.co/800x450/png?text=Presentiste+que+jugar+no+era+buena+idea"></a-plane>
           <a-text value="No Jugar" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
         </a-entity>
       </a-entity>
 
       <!-- Menú de reinicio: aparece tras No abrir, Quedarse (Casa), Quedarse en el Bosque, o Jugar -->
       <a-entity id="menuReinicio" visible="false">
-        <a-entity position="0 -0.7 -1">
+        <a-entity position="0 -0.7 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#455A64"
             tarjeta="destino: 2 1.6 6; ocultar: #menuReinicio, #menuAyudaLudopatia; mostrar: #menuPuerta"></a-plane>
           <a-text value="Volver al inicio" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
@@ -252,7 +262,7 @@
 
       <!-- Mensaje de ayuda: aparece solo en el final malo (Jugar). No se auto-oculta. -->
       <a-entity id="menuAyudaLudopatia" visible="false">
-        <a-plane color="#1B1B1B" width="3" height="2" position="0 0.6 -1.5"></a-plane>
+        <a-plane color="#1B1B1B" width="3.6" height="2.5" position="0 0.6 -1.75"></a-plane>
         <a-text
           value="El juego no deberia controlar tu vida. Si sientes que perdiste el control, pedir ayuda tambien es ganar.
 En Colombia, busca apoyo y no enfrentes la ludopatia a solas.
@@ -263,7 +273,7 @@ Emergencias: 123
 Tambien puedes acudir a tu EPS o centro de salud para recibir orientacion profesional.
 
 Tu vida vale mas que cualquier apuesta. Detente, habla y pide ayuda."
-          align="center" width="3.3" wrap-count="42" position="0 0.6 -1.5" color="#FFF" scale="0.5 0.5 0.5"></a-text>
+          align="center" width="3.3" wrap-count="42" position="0 0.6 -1.7" color="#FFF"></a-text>
       </a-entity>
 
     </a-entity>
