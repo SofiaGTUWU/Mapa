@@ -253,16 +253,16 @@
 
       <!-- Menú de reinicio: aparece tras No abrir, Quedarse (Casa), Quedarse en el Bosque, o Jugar -->
       <a-entity id="menuReinicio" visible="false">
-        <a-entity position="0 -0.7 -2">
+        <a-entity position="0 -0.7 -1.5">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#455A64"
             tarjeta="destino: 2 1.6 6; ocultar: #menuReinicio, #menuAyudaLudopatia; mostrar: #menuPuerta"></a-plane>
-          <a-text value="Volver al inicio" align="center" width="2.3" position="0 0 0.01" color="#FFF"></a-text>
+          <a-text value="Volver al inicio" align="center" width="2.3" position="0 0 -1.5" color="#FFF"></a-text>
         </a-entity>
       </a-entity>
 
       <!-- Mensaje de ayuda: aparece solo en el final malo (Jugar). No se auto-oculta. -->
       <a-entity id="menuAyudaLudopatia" visible="false">
-        <a-plane color="#1B1B1B" width="3.6" height="2.5" position="0 0.6 -1"></a-plane>
+        <a-plane color="#1B1B1B" width="3.6" height="2.5" position="0 0.6 -1.7"></a-plane>
         <a-text
           value="El juego no deberia controlar tu vida. Si sientes que perdiste el control, pedir ayuda tambien es ganar.
 En Colombia, busca apoyo y no enfrentes la ludopatia a solas.
