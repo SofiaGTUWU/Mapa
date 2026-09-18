@@ -207,8 +207,8 @@
       <img id="texturaCasino" src="img/imagen1.jpg">
 
       <!-- Música de los finales -->
-      <audio id="musicaBuena" src="zec53-kids-ballad-whistle-with-mallet-ending-15-sec-481072.mp3" preload="auto" loop></audio>
-      <audio id="musicaMala" src="freesound_community-piano-crash-sound-37898.mp3" preload="auto" loop></audio>
+      <audio id="musicaBuena" src="musica/bueno.mp3" preload="auto" loop></audio>
+      <audio id="musicaMala" src="musica/malo.mp3" preload="auto" loop></audio>
     </a-assets>
 
     <a-entity id="mundo">
@@ -270,7 +270,7 @@
 
       <!-- 1) CASA: el lobo está golpeando -->
       <a-entity id="menuPuerta" visible="false">
-        <a-text value="Los cabritos se han quedado solos, su madre fue por viveres, pero alguien toca la puerta. Ves por la ventana y es el lobo, ¿Que haces?" align="center" width="3.6" wrap-count="38" position="0 0.5 -2" color="#FFF"></a-text>
+        <a-text value="Los cabritos se han quedado solos, su madre fue por víveres, pero alguien toca la puerta. Ves por la ventana y es el lobo, ¿qué haces?" align="center" width="3.6" wrap-count="38" position="0 0.5 -2" color="#FFF"></a-text>
         <a-entity position="-0.9 -0.3 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#C62828"
             tarjeta="destino: 2 1.6 6; ocultar: #menuPuerta; mostrar: #menuReinicio; musica: #musicaBuena; imagen: https://placehold.co/800x450/png?text=Te+salvas+con+tus+hermanos"></a-plane>
@@ -300,7 +300,7 @@
 
       <!-- 3) BOSQUE -->
       <a-entity id="menuBosque" visible="false">
-        <a-text value="El lobo nos prometio muchos regalos y premios si ibamos al casino, pero se ve muy aterrador. ¿Que haces?" align="center" width="3.6" wrap-count="38" position="0 0.5 -2" color="#FFF"></a-text>
+        <a-text value="El lobo nos prometió muchos regalos y premios si íbamos al casino, pero se ve muy aterrador. ¿Qué haces?" align="center" width="3.6" wrap-count="38" position="0 0.5 -2" color="#FFF"></a-text>
         <a-entity position="-0.9 -0.3 -2">
           <a-plane class="tarjeta-boton" width="1.5" height="0.8" color="#2E7D32"
             tarjeta="destino: 0 3 0; ocultar: #menuBosque; mostrar: #menuReinicio; musica: #musicaBuena; imagen: https://placehold.co/800x450/png?text=Encuentras+a+tu+madre+en+el+bosque"></a-plane>
@@ -315,7 +315,7 @@
 
       <!-- 4) CASINO: mini-juego de ruleta -->
       <a-entity id="menuJugar" visible="false">
-        <a-text value="Este juego se ve muy divertido, ¿jugamos un rato o nos vamos?" align="center" width="3.6" wrap-count="38" position="0 0.95 -2" color="#FFF"></a-text>
+        <a-text value="Este juego se ve muy divertido, ¿juguemos un rato o nos vamos?" align="center" width="3.6" wrap-count="38" position="0 0.95 -2" color="#FFF"></a-text>
         <a-text id="marcadorPuntos" value="Puntos: 300" align="center" width="2.5" position="0 0.6 -2" color="#FFEB3B"></a-text>
         <a-text id="resultadoRuleta" value="" align="center" width="2.8" position="0 0.3 -2" color="#FFF"></a-text>
 
